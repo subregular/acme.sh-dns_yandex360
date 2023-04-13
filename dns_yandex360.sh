@@ -45,7 +45,7 @@ dns_yandex360_add() {
 #Usage: dns_myapi_rm   _acme-challenge.www.domain.com
 dns_yandex360_rm() {
   fulldomain="${1}"
-  _debug "Calling: dns_yandex_rm() '${fulldomain}'"
+  _debug "Calling: dns_yandex360_rm() '${fulldomain}'"
 
   _y360_credentials || return 1
 
