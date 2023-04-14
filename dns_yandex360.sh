@@ -57,7 +57,6 @@ dns_yandex360_rm() {
 
   for record_id in $record_ids; do
     data=""
-    # uri="https://pddimp.yandex.ru/api2/admin/dns/del"
     uri="https://api360.yandex.net/directory/v1/org/$y360_orgID/domains/$domain/dns/$record_id"
     result="$(_post "" "${uri}" "" "DELETE" | _normalizeJson)"
     _debug "Result: $result"
