@@ -15,7 +15,7 @@
 
 #Usage: dns_myapi_add   _acme-challenge.www.domain.com   "XKrxpRBosdIKFzxW_CT3KLZNf6q0HG9i01zxXp5CPBs"
 dns_yandex360_add() {
-  fulldomain=`idn "${1}"`
+  fulldomain="${1}"
   txtvalue="${2}"
   _debug "Calling: dns_yandex360_add() '${fulldomain}' '${txtvalue}'"
 
@@ -44,7 +44,7 @@ dns_yandex360_add() {
 
 #Usage: dns_myapi_rm   _acme-challenge.www.domain.com
 dns_yandex360_rm() {
-  fulldomain=`idn "${1}"`
+  fulldomain="${1}"
   _debug "Calling: dns_yandex360_rm() '${fulldomain}'"
 
   _y360_credentials || return 1
