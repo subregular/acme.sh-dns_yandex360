@@ -2,7 +2,9 @@
 # Author: non7top@gmail.com
 # 07 Jul 2017
 # report bugs at https://github.com/non7top/acme.sh
-# 05 Apr 2023 Adapted for use with Yandex360 by SaGAcious
+# 2023-04-05 Adapted for use with Yandex360 by SaGAcious
+# 2023-07-24 Thanks to dyadMisha ( https://github.com/dyadMisha ) for improving the "IDN fix" . [Status:testing...].
+#  ! Works only for second-level domains and third-level wildcard only. (example: домен.рф , *.домен.рф)
 
 # Values to export:
 # export y360_token="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
@@ -15,7 +17,8 @@
 
 #Usage: dns_myapi_add   _acme-challenge.www.domain.com   "XKrxpRBosdIKFzxW_CT3KLZNf6q0HG9i01zxXp5CPBs"
 dns_yandex360_add() {
-  fulldomain="${1}"
+  # fulldomain="${1}"
+  fulldomain="$(_idn "${1}")"
   txtvalue="${2}"
   _debug "Calling: dns_yandex360_add() '${fulldomain}' '${txtvalue}'"
 
@@ -44,7 +47,8 @@ dns_yandex360_add() {
 
 #Usage: dns_myapi_rm   _acme-challenge.www.domain.com
 dns_yandex360_rm() {
-  fulldomain="${1}"
+  # fulldomain="${1}"
+  fulldomain="$(_idn "${1}")"
   _debug "Calling: dns_yandex360_rm() '${fulldomain}'"
 
   _y360_credentials || return 1
@@ -81,7 +85,7 @@ _y360_get_domain() {
       return 1
     fi
 
-    uri="https://api360.yandex.net/directory/v1/org/$y360_orgID/domains/$domain/dns?page=1&perPage=50"
+    uri="https://api360.yandex.net/directory/v1/org/$y360_orgID/domains/$domain/dns?page=1&perPage=100"
     result="$(_get "${uri}" | _normalizeJson)"
     _debug "Result: $result"
 
@@ -113,7 +117,7 @@ _y360_credentials() {
 _y360_get_record_ids() {
   _debug "Check existing records for $subdomain"
 
-  uri="https://api360.yandex.net/directory/v1/org/$y360_orgID/domains/$domain/dns?page=1&perPage=50"
+  uri="https://api360.yandex.net/directory/v1/org/$y360_orgID/domains/$domain/dns?page=1&perPage=100"
   result="$(_get "${uri}" | _normalizeJson)"
   _debug "Result: $result"
 
