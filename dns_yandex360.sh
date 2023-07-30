@@ -18,7 +18,7 @@
 #Usage: dns_myapi_add   _acme-challenge.www.domain.com   "XKrxpRBosdIKFzxW_CT3KLZNf6q0HG9i01zxXp5CPBs"
 dns_yandex360_add() {
   # fulldomain="${1}"
-  fulldomain="$(_idn "${1}")"
+  fulldomain="${1}"
   txtvalue="${2}"
   _debug "Calling: dns_yandex360_add() '${fulldomain}' '${txtvalue}'"
 
@@ -35,7 +35,7 @@ dns_yandex360_add() {
   fi
 
   data='{"name":"'${subdomain}'","text":"'${txtvalue}'","ttl":"300","type":"TXT"}'
-  uri="https://api360.yandex.net/directory/v1/org/$y360_orgID/domains/$domain/dns"
+  uri="https://api360.yandex.net/directory/v1/org/$y360_orgID/domains/$(_idn "$domain")/dns"
   result="$(_post "${data}" "${uri}" | _normalizeJson)"
   _debug "Result: $result"
 
@@ -61,7 +61,7 @@ dns_yandex360_rm() {
 
   for record_id in $record_ids; do
     data=""
-    uri="https://api360.yandex.net/directory/v1/org/$y360_orgID/domains/$domain/dns/$record_id"
+    uri="https://api360.yandex.net/directory/v1/org/$y360_orgID/domains/$(_idn "$domain")/dns/$record_id"
     result="$(_post "" "${uri}" "" "DELETE" | _normalizeJson)"
     _debug "Result: $result"
 
@@ -85,7 +85,7 @@ _y360_get_domain() {
       return 1
     fi
 
-    uri="https://api360.yandex.net/directory/v1/org/$y360_orgID/domains/$domain/dns?page=1&perPage=100"
+    uri="https://api360.yandex.net/directory/v1/org/$y360_orgID/domains/$(_idn "$domain")/dns?page=1&perPage=100"
     result="$(_get "${uri}" | _normalizeJson)"
     _debug "Result: $result"
 
@@ -117,7 +117,7 @@ _y360_credentials() {
 _y360_get_record_ids() {
   _debug "Check existing records for $subdomain"
 
-  uri="https://api360.yandex.net/directory/v1/org/$y360_orgID/domains/$domain/dns?page=1&perPage=100"
+  uri="https://api360.yandex.net/directory/v1/org/$y360_orgID/domains/$(_idn "$domain")/dns?page=1&perPage=100"
   result="$(_get "${uri}" | _normalizeJson)"
   _debug "Result: $result"
 
