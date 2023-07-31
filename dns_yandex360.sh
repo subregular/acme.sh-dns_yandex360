@@ -3,8 +3,7 @@
 # 07 Jul 2017
 # report bugs at https://github.com/non7top/acme.sh
 # 2023-04-05 Adapted for use with Yandex360 by SaGAcious
-# 2023-07-24 Thanks to dyadMisha ( https://github.com/dyadMisha ) for improving the "IDN fix" . [Status:testing...].
-#  ! Works only for second-level domains and third-level wildcard only. (example: домен.рф , *.домен.рф)
+# 2023-07-24 Thanks to dyadMisha ( https://github.com/dyadMisha ) for the improved support of IDN.
 
 # Values to export:
 # export y360_token="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
@@ -17,7 +16,6 @@
 
 #Usage: dns_myapi_add   _acme-challenge.www.domain.com   "XKrxpRBosdIKFzxW_CT3KLZNf6q0HG9i01zxXp5CPBs"
 dns_yandex360_add() {
-  # fulldomain="${1}"
   fulldomain="${1}"
   txtvalue="${2}"
   _debug "Calling: dns_yandex360_add() '${fulldomain}' '${txtvalue}'"
@@ -47,7 +45,6 @@ dns_yandex360_add() {
 
 #Usage: dns_myapi_rm   _acme-challenge.www.domain.com
 dns_yandex360_rm() {
-  # fulldomain="${1}"
   fulldomain="$(_idn "${1}")"
   _debug "Calling: dns_yandex360_rm() '${fulldomain}'"
 
@@ -56,11 +53,10 @@ dns_yandex360_rm() {
   _y360_get_domain "$fulldomain" || return 1
   _debug "Found suitable domain: $domain"
 
-  _y360_get_record_ids "${domain}" "${subdomain}" || return 1
+  _y360_get_record_ids || return 1
   _debug "Record_ids: $record_ids"
 
   for record_id in $record_ids; do
-    data=""
     uri="https://api360.yandex.net/directory/v1/org/$y360_orgID/domains/$(_idn "$domain")/dns/$record_id"
     result="$(_post "" "${uri}" "" "DELETE" | _normalizeJson)"
     _debug "Result: $result"
@@ -82,6 +78,7 @@ _y360_get_domain() {
 
     _debug "Checking domain $domain"
     if [ -z "$domain" ]; then
+      _err "Can't find root domain"
       return 1
     fi
 
