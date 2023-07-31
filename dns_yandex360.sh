@@ -66,7 +66,6 @@ dns_yandex360_rm() {
   _debug "Record_ids: $record_ids"
 
   for record_id in $record_ids; do
-    data=""
     uri="https://api360.yandex.net/directory/v1/org/$y360_orgID/domains/$(_idn "$domain")/dns/$record_id"
     result="$(_post "" "${uri}" "" "DELETE" | _normalizeJson)"
     _debug "Result: $result"
