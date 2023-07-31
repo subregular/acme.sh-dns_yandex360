@@ -45,7 +45,16 @@ dns_yandex360_add() {
 
 #Usage: dns_myapi_rm   _acme-challenge.www.domain.com
 dns_yandex360_rm() {
-  fulldomain="${1}"
+  if _contains "${1}" 'xn--'; then
+    if _exists idn; then
+      fulldomain="$(idn -u --quiet "${1}" | tr -d "\r\n")"
+    else
+      _err "Please install idn to process IDN names."
+    fi
+  else
+    fulldomain="${1}"
+  fi
+  
   _debug "Calling: dns_yandex360_rm() '${fulldomain}'"
 
   _y360_credentials || return 1
