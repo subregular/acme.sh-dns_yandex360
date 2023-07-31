@@ -45,7 +45,7 @@ dns_yandex360_add() {
 
 #Usage: dns_myapi_rm   _acme-challenge.www.domain.com
 dns_yandex360_rm() {
-  fulldomain="$(_idn "${1}")"
+  fulldomain="${1}"
   _debug "Calling: dns_yandex360_rm() '${fulldomain}'"
 
   _y360_credentials || return 1
@@ -57,6 +57,7 @@ dns_yandex360_rm() {
   _debug "Record_ids: $record_ids"
 
   for record_id in $record_ids; do
+    data=""
     uri="https://api360.yandex.net/directory/v1/org/$y360_orgID/domains/$(_idn "$domain")/dns/$record_id"
     result="$(_post "" "${uri}" "" "DELETE" | _normalizeJson)"
     _debug "Result: $result"
